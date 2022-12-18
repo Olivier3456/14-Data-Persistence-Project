@@ -20,22 +20,25 @@ public class StartMenu : MonoBehaviour
 
     class SaveData          // La classe qui va contenir nos variables à charger depuis la sauvegarde json.
     {
-        public string NameOfBestPlayer;
-        public int BestScore;
+        public string[] BestPlayers = new string[2];
+        public int[] BestScores = new int[2];   
     }
 
 
     public void Start()
     {
+        _inputField.text = SaveNameOfPlayer.PlayerName;
+
         string path = Application.persistentDataPath + "/bestscore.json";
         if (File.Exists(path))
         {    
             string json = File.ReadAllText(path);
             SaveData dataLoaded = JsonUtility.FromJson<SaveData>(json);
 
-            int _bestScore = dataLoaded.BestScore;
-            string _nameOfPlayerBestScore = dataLoaded.NameOfBestPlayer;
-            _bestScoreText.text = "Best Score : " + _nameOfPlayerBestScore + " : " + _bestScore;
+            int[] bestScores = dataLoaded.BestScores;
+            string[] bestPlayers = dataLoaded.BestPlayers;
+                        
+            _bestScoreText.text = "Best Score : " + bestPlayers[0] + " : " + bestScores[0];
             _bestScoreText.gameObject.SetActive(true);
         }
     }
@@ -56,8 +59,18 @@ public class StartMenu : MonoBehaviour
         }
         else
         {
-            SaveNameOfPlayer.PlayerName = _inputField.text;         // Sinon, PlayerName devient égal au texte entré par le joueur, le jeu se charge.
-            SceneManager.LoadScene(1);           
+            SaveNameOfPlayer.PlayerName = _inputField.text;         // Sinon, PlayerName devient égal au texte entré par le joueur, et le jeu se charge.
+            SceneManager.LoadScene(2);           
         }
+    }
+
+    public void LoadBestScoresScene()
+    {
+        if (_inputField.text != "Type your name" || _inputField.text.Length > 0)       // Si le joueur n'a entré son nom, le jeu le sauvegarde.
+        {
+            SaveNameOfPlayer.PlayerName = _inputField.text;
+        }
+
+        SceneManager.LoadScene(1);
     }
 }

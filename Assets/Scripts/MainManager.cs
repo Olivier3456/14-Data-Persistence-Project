@@ -21,14 +21,19 @@ public class MainManager : MonoBehaviour
 
     private bool m_GameOver = false;
 
+
     private int _bestScore;
-    private string _nameOfPlayerBestScore;
+    private int[] _bestScores = new int[] { 0, 0, 0 };
+
+    private string _bestPlayer;
+    private string[] _bestPlayers = new string[] { "***", "***", "***" };
+
 
     [Serializable]
-    class SaveData          // Notre classe sérializable qui va contenir nos variables à sauvegarder en json.
+    class SaveData          // La classe qui va contenir nos variables à charger depuis la sauvegarde json.
     {
-        public string NameOfBestPlayer;
-        public int BestScore;
+        public string[] BestPlayers = new string[2];
+        public int[] BestScores = new int[2];
     }
 
 
@@ -72,12 +77,11 @@ public class MainManager : MonoBehaviour
         else if (m_GameOver)
         {
             // Si le record a été battu, affiche le nouveau meilleur score et le nom du nouveau meilleur joueur : 
-            if (m_Points >= _bestScore) ScoreText1.text = "Best Score : " + _nameOfPlayerBestScore + " : " + _bestScore;
+            if (m_Points >= _bestScore) ScoreText1.text = "Best Score : " + _bestPlayer + " : " + _bestScore;
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 SaveBestScore();
-
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
@@ -88,23 +92,42 @@ public class MainManager : MonoBehaviour
         string path = Application.persistentDataPath + "/bestscore.json";
         if (File.Exists(path))
         {
-
             string json = File.ReadAllText(path);
             SaveData dataLoaded = JsonUtility.FromJson<SaveData>(json);
 
-            _bestScore = dataLoaded.BestScore;
-            _nameOfPlayerBestScore = dataLoaded.NameOfBestPlayer;
-            ScoreText1.text = "Best Score : " + _nameOfPlayerBestScore + " : " + _bestScore;
-        }
+            _bestScore = dataLoaded.BestScores[0];          // Le meilleur score est le premier du tableau des meilleurs scores contenu dans la sauvegarde json.
+            _bestPlayer = dataLoaded.BestPlayers[0];
+
+            _bestScores = dataLoaded.BestScores;            // Nous chargeons dans nos tableaux locaux ceux de la sauvegarde.
+            _bestPlayers = dataLoaded.BestPlayers;
+
+            ScoreText1.text = "Best Score : " + _bestPlayer + " : " + _bestScore;
+        }       
     }
 
     public void SaveBestScore()
     {
-        if (m_Points >= _bestScore)     // Ne sauvegarde que si le score actuel est supérieur ou égal au meilleur score.
+        if (m_Points >= _bestScores[_bestScores.Length - 1])     // Si le score est plus élevé que le dernier du tableau des meilleurs scores...
         {
+            for (int i = 0; i < _bestScores.Length; i++)         // On part du début du tableau des meilleurs scores et on le descend...
+            {
+                if (m_Points > _bestScores[i])                             // Si le score de la partie est plus grand que le meilleur score du tableau (puis le 2e meilleur, etc.)...
+                {         
+                    for (int j = _bestScores.Length - 1; j > i; j--)       // On décale tous les scores et noms vers la fin du tableau, en partant de la fin pour ne pas écraser les valeurs.
+                    {                                                      // Seule la dernière valeur est écrasée : elle sort du tableau des scores. On s'arrête à l'index juste avant i.
+                        _bestScores[j] = _bestScores[j - 1];
+                        _bestPlayers[j] = _bestPlayers[j - 1];                        
+                    }
+                    _bestScores[i] = m_Points;                             // Enfin, on remplace les valeurs au rang i par le score actuel et le nom du joueur.
+                    _bestPlayers[i] = _bestPlayer;
+
+                    break;                                                 // Et on sort de la boucle.
+                }
+            }
+
             SaveData dataToSave = new SaveData();
-            dataToSave.NameOfBestPlayer = SaveNameOfPlayer.PlayerName;
-            dataToSave.BestScore = m_Points;
+            dataToSave.BestPlayers = _bestPlayers;
+            dataToSave.BestScores = _bestScores;
             string json = JsonUtility.ToJson(dataToSave);
             File.WriteAllText(Application.persistentDataPath + "/bestscore.json", json);
         }
@@ -116,8 +139,8 @@ public class MainManager : MonoBehaviour
         m_Points += point;
         if (m_Points > _bestScore)
         {
-            _bestScore = m_Points;                                      // Si le score actuel du joueur est supérieur à _bestcore, il devient le nouveau _bestcore,
-            _nameOfPlayerBestScore = SaveNameOfPlayer.PlayerName;       // et le nom du meilleur joueur devient celui du joueur actuel.
+            _bestScore = m_Points;                           // Si le score actuel du joueur est supérieur à _bestcore, il devient le nouveau _bestcore,
+            _bestPlayer = SaveNameOfPlayer.PlayerName;       // et le nom du meilleur joueur devient celui du joueur actuel.
         }
 
         ScoreText.text = "Score : " + m_Points;

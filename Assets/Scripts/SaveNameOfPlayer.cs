@@ -8,5 +8,5 @@ using UnityEngine.UI;
 
 public class SaveNameOfPlayer : MonoBehaviour
 {
-    public static string PlayerName;
+    public static string PlayerName = "Type your name";
 }
