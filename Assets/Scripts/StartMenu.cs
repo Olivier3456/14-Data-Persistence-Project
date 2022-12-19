@@ -7,6 +7,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+
+class SaveData          // La classe qui va contenir nos variables à charger depuis la sauvegarde json.
+{
+    public string[] BestPlayers = new string[2];
+    public int[] BestScores = new int[2];
+}
+
+
+
 // J'ai choisi d'attacher ce script au canvas de l'UI.
 
 public class StartMenu : MonoBehaviour
@@ -18,28 +27,28 @@ public class StartMenu : MonoBehaviour
     private string _nameMoinsUnCaractere = "";
 
 
-    class SaveData          // La classe qui va contenir nos variables à charger depuis la sauvegarde json.
-    {
-        public string[] BestPlayers = new string[2];
-        public int[] BestScores = new int[2];   
-    }
-
 
     public void Start()
     {
         _inputField.text = SaveNameOfPlayer.PlayerName;
 
+        LoadSavedData();
+
+        if (SaveNameOfPlayer.BestScores != null) _bestScoreText.text = "Best Score : " + SaveNameOfPlayer.BestPlayers[0] + " : " + SaveNameOfPlayer.BestScores[0];
+        _bestScoreText.gameObject.SetActive(true);
+    }
+
+
+    public void LoadSavedData()
+    {
         string path = Application.persistentDataPath + "/bestscore.json";
         if (File.Exists(path))
-        {    
+        {
             string json = File.ReadAllText(path);
             SaveData dataLoaded = JsonUtility.FromJson<SaveData>(json);
 
-            int[] bestScores = dataLoaded.BestScores;
-            string[] bestPlayers = dataLoaded.BestPlayers;
-                        
-            _bestScoreText.text = "Best Score : " + bestPlayers[0] + " : " + bestScores[0];
-            _bestScoreText.gameObject.SetActive(true);
+            SaveNameOfPlayer.BestScores = dataLoaded.BestScores;        // Nous stockons dans les tableaux static de la classe SaveNameOfPlayer ceux de la sauvegarde json.
+            SaveNameOfPlayer.BestPlayers = dataLoaded.BestPlayers;
         }
     }
 
@@ -60,7 +69,7 @@ public class StartMenu : MonoBehaviour
         else
         {
             SaveNameOfPlayer.PlayerName = _inputField.text;         // Sinon, PlayerName devient égal au texte entré par le joueur, et le jeu se charge.
-            SceneManager.LoadScene(2);           
+            SceneManager.LoadScene(2);
         }
     }
 

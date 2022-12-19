@@ -13,34 +13,16 @@ public class HallOfFameMenu : MonoBehaviour
 
 
 
-    class SaveData          // La classe qui va contenir nos variables à charger depuis la sauvegarde json.
-    {
-        public string[] BestPlayers = new string[2];
-        public int[] BestScores = new int[2];
-    }
-
-
-
     public void Start()     // C'est en partie une copie de la fonction Start() de la classe StartMenu. Je pourrais l'ajouter au MainManager et en faire un objet qui survit entre les scènes.
     {
         string path = Application.persistentDataPath + "/bestscore.json";
         if (File.Exists(path))
-        {
-            string json = File.ReadAllText(path);
-            SaveData dataLoaded = JsonUtility.FromJson<SaveData>(json);
-
-            int[] bestScores = dataLoaded.BestScores;
-            string[] bestPlayers = dataLoaded.BestPlayers;
-
-            if (bestScores[0] != 0) _firstScoreText.text = "1st - " + bestPlayers[0] + " - " + bestScores[0];
-            if (bestScores[1] != 0) _secondScoreText.text = "2nd - " + bestPlayers[1] + " - " + bestScores[1];
-            if (bestScores[2] != 0) _thirdScoreText.text = "3rd - " + bestPlayers[2] + " - " + bestScores[2];
+        {      
+            if (SaveNameOfPlayer.BestScores[0] != 0) _firstScoreText.text = "1st - " + SaveNameOfPlayer.BestPlayers[0] + " - " + SaveNameOfPlayer.BestScores[0];
+            if (SaveNameOfPlayer.BestScores[1] != 0) _secondScoreText.text = "2nd - " + SaveNameOfPlayer.BestPlayers[1] + " - " + SaveNameOfPlayer.BestScores[1];
+            if (SaveNameOfPlayer.BestScores[2] != 0) _thirdScoreText.text = "3rd - " + SaveNameOfPlayer.BestPlayers[2] + " - " + SaveNameOfPlayer.BestScores[2];
         }
     }
-
-
-
-
 
     public void LoadMainMenuScene()
     {

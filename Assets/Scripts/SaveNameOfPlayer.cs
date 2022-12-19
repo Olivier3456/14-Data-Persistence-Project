@@ -9,4 +9,7 @@ using UnityEngine.UI;
 public class SaveNameOfPlayer : MonoBehaviour
 {
     public static string PlayerName = "Type your name";
+
+    public static int[] BestScores;
+    public static string[] BestPlayers;
 }

@@ -26,20 +26,19 @@ public class MainManager : MonoBehaviour
     private int[] _bestScores = new int[] { 0, 0, 0 };
 
     private string _bestPlayer;
-    private string[] _bestPlayers = new string[] { "***", "***", "***" };
-
-
-    [Serializable]
-    class SaveData          // La classe qui va contenir nos variables à charger depuis la sauvegarde json.
-    {
-        public string[] BestPlayers = new string[2];
-        public int[] BestScores = new int[2];
-    }
+    private string[] _bestPlayers = new string[] { "", "", "" };
 
 
     void Start()
     {
-        LoadBestScore();
+        if (SaveNameOfPlayer.BestScores != null) _bestScores = SaveNameOfPlayer.BestScores;
+        if (SaveNameOfPlayer.BestPlayers != null) _bestPlayers = SaveNameOfPlayer.BestPlayers;
+
+        _bestScore = _bestScores[0];
+        _bestPlayer = _bestPlayers[0];
+
+
+        ScoreText1.text = "Best Score : " + _bestPlayer + " : " + _bestScore;
 
         ScoreText.text = "Score : " + m_Points;
 
@@ -87,24 +86,6 @@ public class MainManager : MonoBehaviour
         }
     }
 
-    public void LoadBestScore()
-    {
-        string path = Application.persistentDataPath + "/bestscore.json";
-        if (File.Exists(path))
-        {
-            string json = File.ReadAllText(path);
-            SaveData dataLoaded = JsonUtility.FromJson<SaveData>(json);
-
-            _bestScore = dataLoaded.BestScores[0];          // Le meilleur score est le premier du tableau des meilleurs scores contenu dans la sauvegarde json.
-            _bestPlayer = dataLoaded.BestPlayers[0];
-
-            _bestScores = dataLoaded.BestScores;            // Nous chargeons dans nos tableaux locaux ceux de la sauvegarde.
-            _bestPlayers = dataLoaded.BestPlayers;
-
-            ScoreText1.text = "Best Score : " + _bestPlayer + " : " + _bestScore;
-        }       
-    }
-
     public void SaveBestScore()
     {
         if (m_Points >= _bestScores[_bestScores.Length - 1])     // Si le score est plus élevé que le dernier du tableau des meilleurs scores...
@@ -112,11 +93,11 @@ public class MainManager : MonoBehaviour
             for (int i = 0; i < _bestScores.Length; i++)         // On part du début du tableau des meilleurs scores et on le descend...
             {
                 if (m_Points > _bestScores[i])                             // Si le score de la partie est plus grand que le meilleur score du tableau (puis le 2e meilleur, etc.)...
-                {         
+                {
                     for (int j = _bestScores.Length - 1; j > i; j--)       // On décale tous les scores et noms vers la fin du tableau, en partant de la fin pour ne pas écraser les valeurs.
                     {                                                      // Seule la dernière valeur est écrasée : elle sort du tableau des scores. On s'arrête à l'index juste avant i.
                         _bestScores[j] = _bestScores[j - 1];
-                        _bestPlayers[j] = _bestPlayers[j - 1];                        
+                        _bestPlayers[j] = _bestPlayers[j - 1];
                     }
                     _bestScores[i] = m_Points;                             // Enfin, on remplace les valeurs au rang i par le score actuel et le nom du joueur.
                     _bestPlayers[i] = _bestPlayer;
