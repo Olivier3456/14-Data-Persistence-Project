@@ -16,11 +16,11 @@ public class HallOfFameMenu : MonoBehaviour
     public void Start()     // C'est en partie une copie de la fonction Start() de la classe StartMenu. Je pourrais l'ajouter au MainManager et en faire un objet qui survit entre les scènes.
     {
         string path = Application.persistentDataPath + "/bestscore.json";
-        if (File.Exists(path))
-        {      
-            if (SaveNameOfPlayer.BestScores[0] != 0) _firstScoreText.text = "1st - " + SaveNameOfPlayer.BestPlayers[0] + " - " + SaveNameOfPlayer.BestScores[0];
-            if (SaveNameOfPlayer.BestScores[1] != 0) _secondScoreText.text = "2nd - " + SaveNameOfPlayer.BestPlayers[1] + " - " + SaveNameOfPlayer.BestScores[1];
-            if (SaveNameOfPlayer.BestScores[2] != 0) _thirdScoreText.text = "3rd - " + SaveNameOfPlayer.BestPlayers[2] + " - " + SaveNameOfPlayer.BestScores[2];
+        if (SaveNameOfPlayer.BestScores[0] > 0)
+        {               
+            _firstScoreText.text = "1st - " + SaveNameOfPlayer.BestPlayers[0] + " - " + SaveNameOfPlayer.BestScores[0];
+            _secondScoreText.text = "2nd - " + SaveNameOfPlayer.BestPlayers[1] + " - " + SaveNameOfPlayer.BestScores[1];
+            _thirdScoreText.text = "3rd - " + SaveNameOfPlayer.BestPlayers[2] + " - " + SaveNameOfPlayer.BestScores[2];
         }
     }
 

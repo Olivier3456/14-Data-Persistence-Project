@@ -30,12 +30,12 @@ public class StartMenu : MonoBehaviour
 
     public void Start()
     {
-        _inputField.text = SaveNameOfPlayer.PlayerName;
-
-        LoadSavedData();
+        _inputField.text = SaveNameOfPlayer.PlayerName;        
 
         if (SaveNameOfPlayer.BestScores != null) _bestScoreText.text = "Best Score : " + SaveNameOfPlayer.BestPlayers[0] + " : " + SaveNameOfPlayer.BestScores[0];
         _bestScoreText.gameObject.SetActive(true);
+
+        LoadSavedData();
     }
 
 
@@ -49,6 +49,17 @@ public class StartMenu : MonoBehaviour
 
             SaveNameOfPlayer.BestScores = dataLoaded.BestScores;        // Nous stockons dans les tableaux static de la classe SaveNameOfPlayer ceux de la sauvegarde json.
             SaveNameOfPlayer.BestPlayers = dataLoaded.BestPlayers;
+        }
+        else
+        {
+            SaveData dataToSave = new SaveData();                       // Si pas de sauvegarde trouvée, on en crée une avec des scores à zéro et des chaînes vides pour le nom des joueurs.
+            dataToSave.BestPlayers = new string[] { "", "", "" };
+            dataToSave.BestScores = new int[] { 0, 0, 0 };
+            string json = JsonUtility.ToJson(dataToSave);
+            File.WriteAllText(Application.persistentDataPath + "/bestscore.json", json);
+
+            SaveNameOfPlayer.BestScores = new int[] { 0, 0, 0 };                    // Et on initialise les variables static de SaveNameOfPlayer avec des 0 et des champs vides.
+            SaveNameOfPlayer.BestPlayers = new string[] { "", "", "" };
         }
     }
 

@@ -10,6 +10,6 @@ public class SaveNameOfPlayer : MonoBehaviour
 {
     public static string PlayerName = "Type your name";
 
-    public static int[] BestScores;
-    public static string[] BestPlayers;
+    public static int[] BestScores = new int[] {0, 0, 0};
+    public static string[] BestPlayers = new string[] {"", "", ""};
 }

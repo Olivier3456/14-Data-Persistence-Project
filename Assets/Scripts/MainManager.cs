@@ -23,23 +23,22 @@ public class MainManager : MonoBehaviour
 
 
     private int _bestScore;
-    private int[] _bestScores = new int[] { 0, 0, 0 };
+    private int[] _bestScores;
 
     private string _bestPlayer;
-    private string[] _bestPlayers = new string[] { "", "", "" };
+    private string[] _bestPlayers;
 
 
     void Start()
     {
-        if (SaveNameOfPlayer.BestScores != null) _bestScores = SaveNameOfPlayer.BestScores;
-        if (SaveNameOfPlayer.BestPlayers != null) _bestPlayers = SaveNameOfPlayer.BestPlayers;
-
+        _bestScores = SaveNameOfPlayer.BestScores;
         _bestScore = _bestScores[0];
+
+        _bestPlayers = SaveNameOfPlayer.BestPlayers;
         _bestPlayer = _bestPlayers[0];
 
 
         ScoreText1.text = "Best Score : " + _bestPlayer + " : " + _bestScore;
-
         ScoreText.text = "Score : " + m_Points;
 
         const float step = 0.6f;
@@ -92,7 +91,7 @@ public class MainManager : MonoBehaviour
         {
             for (int i = 0; i < _bestScores.Length; i++)         // On part du début du tableau des meilleurs scores et on le descend...
             {
-                if (m_Points > _bestScores[i])                             // Si le score de la partie est plus grand que le meilleur score du tableau (puis le 2e meilleur, etc.)...
+                if (m_Points >= _bestScores[i])                             // Si le score de la partie est plus grand ou égal au meilleur score du tableau (puis le 2e meilleur, etc.)...
                 {
                     for (int j = _bestScores.Length - 1; j > i; j--)       // On décale tous les scores et noms vers la fin du tableau, en partant de la fin pour ne pas écraser les valeurs.
                     {                                                      // Seule la dernière valeur est écrasée : elle sort du tableau des scores. On s'arrête à l'index juste avant i.
@@ -100,7 +99,7 @@ public class MainManager : MonoBehaviour
                         _bestPlayers[j] = _bestPlayers[j - 1];
                     }
                     _bestScores[i] = m_Points;                             // Enfin, on remplace les valeurs au rang i par le score actuel et le nom du joueur.
-                    _bestPlayers[i] = _bestPlayer;
+                    _bestPlayers[i] = SaveNameOfPlayer.PlayerName;
 
                     break;                                                 // Et on sort de la boucle.
                 }
